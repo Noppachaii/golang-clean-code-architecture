@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	entityuser "github.com/max38/golang-clean-code-architecture/src/domain/entities/user"
+	entitymodels "github.com/max38/golang-clean-code-architecture/src/domain/models"
 	repositories "github.com/max38/golang-clean-code-architecture/src/domain/repositories"
 	authentication "github.com/max38/golang-clean-code-architecture/src/shared/authentication"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +15,7 @@ type IUserUsecase interface {
 	UserLogin(userLoginRequest *entityuser.UserLoginRequest) (*entityuser.UserLoginResponse, error)
 	UserLogout(userRefreshTokenRequest *entityuser.UserRefreshTokenRequest) error
 	UserRefreshToken(userRefreshTokenRequest *entityuser.UserRefreshTokenRequest) (*entityuser.UserLoginResponse, error)
-	UserAuthentication(userToken string) (*entityuser.UserEntity, error)
+	UserAuthentication(userToken string) (*entityuser.UserEntity, *entitymodels.UserPermissionModel, error)
 }
 
 type userUsecase struct {
@@ -141,10 +142,10 @@ func (u *userUsecase) UserLogout(userRefreshTokenRequest *entityuser.UserRefresh
 	return nil
 }
 
-func (u *userUsecase) UserAuthentication(userToken string) (*entityuser.UserEntity, error) {
+func (u *userUsecase) UserAuthentication(userToken string) (*entityuser.UserEntity, *entitymodels.UserPermissionModel, error) {
 	var claims, errorParseToken = authentication.ParseToken(userToken)
 	if errorParseToken != nil {
-		return nil, errorParseToken
+		return nil, nil, errorParseToken
 	}
 
 	var userTokenClaim = *claims.Claims
@@ -152,15 +153,17 @@ func (u *userUsecase) UserAuthentication(userToken string) (*entityuser.UserEnti
 	var userTokenModel, errorGetTokenclaim = u.userRepository.FindOAuthByUserIdAndAccessToken(userTokenClaim.Id, userToken)
 
 	if errorGetTokenclaim != nil {
-		return nil, errorGetTokenclaim
+		return nil, nil, errorGetTokenclaim
 	}
 	if userTokenModel == nil {
-		return nil, fmt.Errorf("user token not found")
+		return nil, nil, fmt.Errorf("user token not found")
 	}
+
+	var userPermission, _ = u.userRepository.GetUserPermissionByUserId(userTokenModel.UserId)
 
 	var userEntity = userTokenModel.User
 
-	return userEntity.ToEntity(), nil
+	return userEntity.ToEntity(), userPermission, nil
 }
 
 func (u *userUsecase) GetUserProfile(userId uint) (*entityuser.UserEntity, error) {

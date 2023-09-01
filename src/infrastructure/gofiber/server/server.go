@@ -44,8 +44,9 @@ func (s *gofiberServer) Start() {
 	var routerGroupApiV1 = s.app.Group("/api/v1")
 	var modules = InitModule(routerGroupApiV1, s, middlewares)
 	modules.MonitorModule()
-	modules.UsersModule(s.application.UserUsecase)
+	modules.UsersModule()
 	modules.SwaggerModule()
+	modules.CRUDModule()
 
 	s.app.Use(middlewares.RouterCheck())
 

@@ -68,7 +68,7 @@ func (h *middlewares) JwtAuth(userUsecase userusecase.IUserUsecase) fiber.Handle
 	return func(c *fiber.Ctx) error {
 		var token = strings.TrimPrefix(c.Get("Authorization"), "Bearer ")
 
-		var userEntity, errorAuthentication = userUsecase.UserAuthentication(token)
+		var userEntity, userPermission, errorAuthentication = userUsecase.UserAuthentication(token)
 
 		if errorAuthentication != nil {
 			return gofiberentities.NewResponse(c).Error(
@@ -79,6 +79,7 @@ func (h *middlewares) JwtAuth(userUsecase userusecase.IUserUsecase) fiber.Handle
 		}
 		// Set User
 		c.Locals("user", userEntity)
+		c.Locals("user_permission", userPermission)
 		return c.Next()
 	}
 }

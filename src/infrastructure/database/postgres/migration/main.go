@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/max38/golang-clean-code-architecture/src/config"
-
-	entitymodels "github.com/max38/golang-clean-code-architecture/src/domain/models"
 	postgreshandler "github.com/max38/golang-clean-code-architecture/src/infrastructure/database/postgres"
+	sharedcrud "github.com/max38/golang-clean-code-architecture/src/shared/crud"
 )
 
 func main() {
@@ -19,8 +19,12 @@ func main() {
 	log.Println("Start migration")
 
 	// Migrate the schema
-	dbConnector.AutoMigrate(&entitymodels.UserModel{})
-	dbConnector.AutoMigrate(&entitymodels.UserTokenModel{})
+	for _, entityModel := range config.EntitiyModels {
+		if entityModel.Datasource() == sharedcrud.DatasourcePostgresql {
+			dbConnector.AutoMigrate(entityModel)
+			fmt.Println("Migrate table: " + entityModel.TableName())
+		}
+	}
 
 	dbHandler.Close()
 

@@ -9,3 +9,11 @@ services:
     ports:
       - "5432:5432"
 
+  mongodb:
+    image: mongo:6.0.8
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: golang-first-api
+

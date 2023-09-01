@@ -3,9 +3,9 @@ package gofiberserver
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
+	gofibercrudhandler "github.com/max38/golang-clean-code-architecture/src/interface/handlers/gofiber/modules/crud"
 	gofibermonitorhandler "github.com/max38/golang-clean-code-architecture/src/interface/handlers/gofiber/modules/monitor"
 	gofiberuserhandler "github.com/max38/golang-clean-code-architecture/src/interface/handlers/gofiber/modules/user"
-	userusecase "github.com/max38/golang-clean-code-architecture/src/usecases/user"
 
 	// Replace this with your own docs package
 	_ "github.com/max38/golang-clean-code-architecture/src/infrastructure/gofiber/docs"
@@ -13,8 +13,9 @@ import (
 
 type IModuleFactory interface {
 	MonitorModule()
-	UsersModule(userUsecase userusecase.IUserUsecase)
+	UsersModule()
 	SwaggerModule()
+	CRUDModule()
 }
 
 type moduleFactory struct {
@@ -55,10 +56,10 @@ func (m *moduleFactory) SwaggerModule() {
 	}))
 }
 
-func (m *moduleFactory) UsersModule(userUsecase userusecase.IUserUsecase) {
+func (m *moduleFactory) UsersModule() {
 	// var userRepository = postgresuserrepository.UserRepository()
 	// var userUsecase = userusecase.UserUsecase(m.server.userRepository)
-	var userHandler = gofiberuserhandler.UserHandler(userUsecase)
+	var userHandler = gofiberuserhandler.UserHandler(m.server.application.UserUsecase)
 
 	var router = m.router.Group("/users")
 
@@ -69,4 +70,12 @@ func (m *moduleFactory) UsersModule(userUsecase userusecase.IUserUsecase) {
 
 	router.Post("/profile", m.middlewares.JwtAuth(m.server.application.UserUsecase), userHandler.GetUserProfile)
 
+}
+
+func (m *moduleFactory) CRUDModule() {
+	var router = m.router.Group("/data")
+	var crudHandler = gofibercrudhandler.CRUDHandler()
+	router.Get("/:entity_model_slug/describe", m.middlewares.JwtAuth(m.server.application.UserUsecase), crudHandler.Describe)
+	router.Get("/:entity_model_slug/", m.middlewares.JwtAuth(m.server.application.UserUsecase), crudHandler.RetriveList)
+	router.Get("/:entity_model_slug/:id", m.middlewares.JwtAuth(m.server.application.UserUsecase), crudHandler.Retrive)
 }

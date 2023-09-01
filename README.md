@@ -98,6 +98,13 @@ go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgresql
 ```
 
+### MongoDB
+if use mongodb
+```bash
+go get go.mongodb.org/mongo-driver
+go get go.mongodb.org/mongo-driver/mongo
+```
+
 
 ## For Development
 
@@ -109,3 +116,7 @@ follow this https://github.com/gofiber/cli
 ```bash
 fiber dev -t ./src/infrastructure/gofiber/main.go
 ```
+
+### Add More Model
+1. Define in src/domain/models/xxxx.go
+2. Add Model at src/config/crudModels.go

@@ -14,4 +14,5 @@ type IUserRepository interface {
 	FindOneOAuthByUserId(userId uint) (*entitymodels.UserTokenModel, error)
 	FindOAuthByUserIdAndAccessToken(userId uint, accessToken string) (*entitymodels.UserTokenModel, error)
 	DeleteOAuthByUserId(userId uint) error
+	GetUserPermissionByUserId(userId uint) (*entitymodels.UserPermissionModel, error)
 }

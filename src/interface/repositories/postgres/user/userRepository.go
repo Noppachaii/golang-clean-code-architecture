@@ -137,3 +137,16 @@ func (u *userRepository) FindOAuthByUserIdAndAccessToken(userId uint, accessToke
 
 	return &userTokenModel, nil
 }
+
+func (u *userRepository) GetUserPermissionByUserId(userId uint) (*entitymodels.UserPermissionModel, error) {
+	var dbConnector = u.dbHandler.GetConnector()
+
+	var userPermissionModel = entitymodels.UserPermissionModel{}
+	var dbResult = dbConnector.Where("user_id = ?", userId).First(&userPermissionModel)
+
+	if dbResult.Error != nil {
+		return nil, dbResult.Error
+	}
+
+	return &userPermissionModel, nil
+}
