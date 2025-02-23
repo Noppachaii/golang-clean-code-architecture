@@ -1,9 +1,16 @@
+<<<<<<< Updated upstream
 package gofiber
+=======
+// filepath: /Users/noppachai/Documents/สมัครงาน/Testสัมงาน/golang-clean-code-architecture/src/infrastructure/gofiber/main.go
+package main
+>>>>>>> Stashed changes
 
 import (
 	config "github.com/max38/golang-clean-code-architecture/src/config"
 	entities "github.com/max38/golang-clean-code-architecture/src/domain/entities"
+	_ "github.com/max38/golang-clean-code-architecture/src/infrastructure/gofiber/docs" // Import generated docs
 	gofiberserver "github.com/max38/golang-clean-code-architecture/src/infrastructure/gofiber/server"
+	"github.com/max38/golang-clean-code-architecture/src/infrastructure/gofiber/swagger" // Import the swagger setup
 	postgresuserrepository "github.com/max38/golang-clean-code-architecture/src/interface/repositories/postgres/user"
 	userusecase "github.com/max38/golang-clean-code-architecture/src/usecases/user"
 )
@@ -34,6 +41,11 @@ func main() {
 	// Initialize the server and setup Swagger
 	var server gofiberserver.IServer = gofiberserver.NewServer(applicationEntity)
 
+<<<<<<< Updated upstream
 	// Start the server
+=======
+	swagger.SetupSwagger(server.App())
+
+>>>>>>> Stashed changes
 	server.Start()
 }
