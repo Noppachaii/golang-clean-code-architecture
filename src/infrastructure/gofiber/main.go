@@ -1,4 +1,4 @@
-package main
+package gofiber
 
 import (
 	config "github.com/max38/golang-clean-code-architecture/src/config"
@@ -19,15 +19,21 @@ import (
 // @host localhost:3000
 // @BasePath /
 func main() {
+	// Load environment variables from a configuration file
 	config.Load(".env.dev")
 
+	// Initialize repositories and use cases
 	var userRepository = postgresuserrepository.UserRepository()
 	var userUsecase = userusecase.UserUsecase(userRepository)
 
+	// Create an application entity with the user usecase
 	var applicationEntity = entities.ApplicationEntity{
 		UserUsecase: userUsecase,
 	}
 
+	// Initialize the server and setup Swagger
 	var server gofiberserver.IServer = gofiberserver.NewServer(applicationEntity)
+
+	// Start the server
 	server.Start()
 }

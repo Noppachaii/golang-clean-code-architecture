@@ -14,6 +14,7 @@ import (
 
 type IServer interface {
 	Start()
+	App() *fiber.App
 }
 
 type gofiberServer struct {
@@ -63,4 +64,7 @@ func (s *gofiberServer) Start() {
 	var serverListen string = fmt.Sprintf("%s:%d", config.Config.String("GOAPP_HOST"), config.Config.Int("GOAPP_PORT"))
 	log.Printf("server is starting on %v", serverListen)
 	s.app.Listen(serverListen)
+}
+func (s *gofiberServer) App() *fiber.App {
+	return s.app
 }
